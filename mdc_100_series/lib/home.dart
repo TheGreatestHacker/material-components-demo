@@ -51,6 +51,8 @@ class HomePage extends StatelessWidget {
                 product.assetName,
                 package: product.assetPackage,
                 // TODO: Adjust the box size (102)
+                // Need this to fit image to card width wise. Default is 4 points of padding on top and bottom if not specified
+                fit: BoxFit.fitWidth,
               ),
             ),
             Expanded(
