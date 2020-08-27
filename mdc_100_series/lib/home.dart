@@ -16,6 +16,43 @@ import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
   // TODO: Make a collection of cards (102)
+  // ********* Custom hidden API to generate cards to GridView's children field ************
+  // column widget used to lay out the child widgets vertically
+  // crossAxisAlignment: field specifies .start, which means align text to the leading edge
+  // AspectRatio widget decides what shape the image takes no matter what kind of image is supplied
+  // Padding brings the text in from the side a little
+  // The two Text widgets are stacked vertically with 8 points of empty spaces between them (SizedBox).
+  // We make another column to house them inside the Padding.
+  List<Card> _buildGridCards(int count) {
+    List<Card> cards = List.generate(
+      count,
+      (int index) => Card(
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            AspectRatio(
+              aspectRatio: 18.0 / 11.0,
+              child: Image.asset('assets/diamond.png'),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('Title'),
+                  SizedBox(height: 8.0),
+                  Text('Secondary Text'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    return cards;
+  }
+
   // TODO: Add a variable for Category (104)
   @override
   Widget build(BuildContext context) {
@@ -28,7 +65,8 @@ class HomePage extends StatelessWidget {
         leading: IconButton(
             icon: Icon(
               Icons.menu,
-              semanticLabel: 'menu',
+              semanticLabel:
+                  'menu', // used to add accessiblity info in Flutter. Used for screen readers
             ),
             onPressed: () {
               print('Menu button');
@@ -57,12 +95,21 @@ class HomePage extends StatelessWidget {
         ],
       ),
       // TODO: Add a grid view (102)
-      body: Center(
-        child: Text('You did it!'),
+      // Invoke the count() method on GridView since the num of items it displays is countable and not infinite
+      // padding: field  provides space on all 4 sides of the GridView
+      // childAspectRatio: field identifies the size of the items based on an aspect ratio (width over height). Default is same size cards
+      // child's width: ([width of the entire grid] - [left padding] - [right padding]) / number of columns
+      // childs's height: ([width of the entire grid] - 16 - 16) / 2 * 9 / 8
+      body: GridView.count(
+        crossAxisCount: 2, // how many cards across the screen
+        padding: EdgeInsets.all(16.0),
+        childAspectRatio: 8.0 / 9.0,
+        // TODO: Build a grid of cards (102)
+        children: _buildGridCards(10), //replace
       ),
       // TODO: Set resizeToAvoidBottomInset (101)
-      resizeToAvoidBottomInset:
-          false, //doing this ensures that the keyboard's appearance does not alter the size of the home page or its widgets.
+      //doing this ensures that the keyboard's appearance does not alter the size of the home page or its widgets.
+      resizeToAvoidBottomInset: false,
     );
   }
 }
