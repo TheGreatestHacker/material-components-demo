@@ -13,45 +13,74 @@
 // limitations under the License.
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import 'model/products_repository.dart';
+import 'model/product.dart';
 
 class HomePage extends StatelessWidget {
   // TODO: Make a collection of cards (102)
   // ********* Custom hidden API to generate cards to GridView's children field ************
   // column widget used to lay out the child widgets vertically
   // crossAxisAlignment: field specifies .start, which means align text to the leading edge
-  // AspectRatio widget decides what shape the image takes no matter what kind of image is supplied
-  // Padding brings the text in from the side a little
-  // The two Text widgets are stacked vertically with 8 points of empty spaces between them (SizedBox).
-  // We make another column to house them inside the Padding.
-  List<Card> _buildGridCards(int count) {
-    List<Card> cards = List.generate(
-      count,
-      (int index) => Card(
+  // AspectRatio: widget decides what shape the image takes no matter what kind of image is supplied
+  // Padding: brings the text in from the side a little
+  // The two Text widgets are stacked vertically with 8 points of empty spaces between them (SizedBox). We make another column to house them inside the Padding.
+  List<Card> _buildGridCards(BuildContext context) {
+    List<Product> products = ProductsRepository.loadProducts(Category.all);
+
+    if (products == null || products.isEmpty) {
+      return const <Card>[];
+    }
+
+    final ThemeData theme = Theme.of(context);
+    final NumberFormat formatter = NumberFormat.simpleCurrency(
+        locale: Localizations.localeOf(context).toString());
+
+    return products.map((product) {
+      return Card(
         clipBehavior: Clip.antiAlias,
+        // TODO: Adjust card heights (103)
         child: Column(
+          // TODO: Center items on the card (103)
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             AspectRatio(
-              aspectRatio: 18.0 / 11.0,
-              child: Image.asset('assets/diamond.png'),
+              aspectRatio: 18 / 11,
+              child: Image.asset(
+                product.assetName,
+                package: product.assetPackage,
+                // TODO: Adjust the box size (102)
+              ),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text('Title'),
-                  SizedBox(height: 8.0),
-                  Text('Secondary Text'),
-                ],
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 8.0),
+                child: Column(
+                  // TODO: Align labels to the bottom and center (103)
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  // TODO: Change innermost Column (103)
+                  children: <Widget>[
+                    // TODO: Handle overflowing labels (103)
+                    Text(
+                      product.name,
+                      style: theme.textTheme.headline6,
+                      maxLines: 1,
+                    ),
+                    SizedBox(height: 8.0),
+                    Text(
+                      formatter.format(product.price),
+                      style: theme.textTheme.subtitle2,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
         ),
-      ),
-    );
-    return cards;
-  }
+      );
+    }).toList();
+  } //end method _buildGridCards()
 
   // TODO: Add a variable for Category (104)
   @override
@@ -105,7 +134,7 @@ class HomePage extends StatelessWidget {
         padding: EdgeInsets.all(16.0),
         childAspectRatio: 8.0 / 9.0,
         // TODO: Build a grid of cards (102)
-        children: _buildGridCards(10), //replace
+        children: _buildGridCards(context),
       ),
       // TODO: Set resizeToAvoidBottomInset (101)
       //doing this ensures that the keyboard's appearance does not alter the size of the home page or its widgets.
